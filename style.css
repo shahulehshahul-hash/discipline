@@ -20,7 +20,7 @@ body {
 
 header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 h1 {
@@ -34,6 +34,48 @@ h1 {
   font-size: 14px;
   color: #888;
   margin-top: 4px;
+}
+
+/* Progress */
+.progress {
+  background: #1a1a1a;
+  border: 1px solid #222;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.progress-text {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+#progressPercent {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.progress-label {
+  font-size: 13px;
+  color: #777;
+}
+
+.progress-bar {
+  height: 6px;
+  background: #2a2a2a;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #fff;
+  border-radius: 3px;
+  width: 0%;
+  transition: width 0.3s ease;
 }
 
 .add-habit {
@@ -129,6 +171,18 @@ h1 {
 .habit-item.done .habit-name {
   text-decoration: line-through;
   color: #888;
+}
+
+.habit-streak {
+  font-size: 13px;
+  font-weight: 600;
+  color: #888;
+  min-width: 28px;
+  text-align: right;
+}
+
+.habit-streak.active {
+  color: #fff;
 }
 
 .habit-delete {
