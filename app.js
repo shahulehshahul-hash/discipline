@@ -1,6 +1,7 @@
 // Simple habit tracker - stores everything in localStorage
 
 const STORAGE_KEY = "discipline_habits";
+let lastPercent = 0;
 
 // Get local date as YYYY-MM-DD (fixes timezone issues)
 function formatDate(d) {
@@ -55,6 +56,42 @@ function getStreak(habit) {
   return streak;
 }
 
+// Simple confetti
+function fireConfetti() {
+  const colors = ["#ffffff", "#dddddd", "#aaaaaa", "#888888"];
+  const confettiCount = 80;
+
+  for (let i = 0; i < confettiCount; i++) {
+    const confetti = document.createElement("div");
+    confetti.style.position = "fixed";
+    confetti.style.width = Math.random() * 8 + 4 + "px";
+    confetti.style.height = Math.random() * 6 + 3 + "px";
+    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.left = Math.random() * 100 + "vw";
+    confetti.style.top = "-10px";
+    confetti.style.opacity = "1";
+    confetti.style.zIndex = "9999";
+    confetti.style.borderRadius = "2px";
+    confetti.style.pointerEvents = "none";
+    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+    document.body.appendChild(confetti);
+
+    const fallDuration = Math.random() * 2 + 2;
+    const drift = (Math.random() - 0.5) * 200;
+
+    confetti.animate(
+      [
+        { transform: `translateY(0) translateX(0) rotate(0deg)`, opacity: 1 },
+        { transform: `translateY(100vh) translateX(${drift}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+      ],
+      {
+        duration: fallDuration * 1000,
+        easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+      }
+    ).onfinish = () => confetti.remove();
+  }
+}
+
 // Update the progress bar
 function updateProgress(habits) {
   const todayStr = today();
@@ -64,6 +101,12 @@ function updateProgress(habits) {
 
   document.getElementById("progressPercent").textContent = percent + "%";
   document.getElementById("progressFill").style.width = percent + "%";
+
+  // Fire confetti only when crossing to 100%
+  if (percent === 100 && lastPercent < 100 && total > 0) {
+    fireConfetti();
+  }
+  lastPercent = percent;
 }
 
 // Render the list
