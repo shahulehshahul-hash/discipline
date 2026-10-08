@@ -2,16 +2,23 @@
 
 const STORAGE_KEY = "discipline_habits";
 
-// Get today's date as YYYY-MM-DD
+// Get local date as YYYY-MM-DD (fixes timezone issues)
+function formatDate(d) {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function today() {
-  return new Date().toISOString().slice(0, 10);
+  return formatDate(new Date());
 }
 
 // Get date N days ago as YYYY-MM-DD
 function daysAgo(n) {
   const d = new Date();
   d.setDate(d.getDate() - n);
-  return d.toISOString().slice(0, 10);
+  return formatDate(d);
 }
 
 // Load habits from browser storage
@@ -80,11 +87,11 @@ function render() {
       const streakClass = streak > 0 ? "active" : "";
 
       return `
-        <div class="habit-item ${isDone ? "done" : ""}" data-id="${habit.id}">
-          <div class="habit-check" onclick="toggleHabit('${habit.id}')"></div>
+        <div class="habit-item ${isDone ? "done" : ""}" data-id="${habit.id}" onclick="toggleHabit('${habit.id}')">
+          <div class="habit-check"></div>
           <div class="habit-name">${habit.name}</div>
           <div class="habit-streak ${streakClass}">${streak > 0 ? streak + "d" : ""}</div>
-          <button class="habit-delete" onclick="deleteHabit('${habit.id}')">×</button>
+          <button class="habit-delete" onclick="event.stopPropagation(); deleteHabit('${habit.id}')">×</button>
         </div>
       `;
     })
