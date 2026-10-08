@@ -7,6 +7,13 @@ function today() {
   return new Date().toISOString().slice(0, 10);
 }
 
+// Get date N days ago as YYYY-MM-DD
+function daysAgo(n) {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return d.toISOString().slice(0, 10);
+}
+
 // Load habits from browser storage
 function loadHabits() {
   const data = localStorage.getItem(STORAGE_KEY);
@@ -18,10 +25,46 @@ function saveHabits(habits) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
 }
 
+// Calculate current streak for a habit
+function getStreak(habit) {
+  let streak = 0;
+  let day = 0;
+
+  // If not done today, start checking from yesterday
+  if (!habit.completed.includes(today())) {
+    day = 1;
+  }
+
+  while (true) {
+    const date = daysAgo(day);
+    if (habit.completed.includes(date)) {
+      streak++;
+      day++;
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
+
+// Update the progress bar
+function updateProgress(habits) {
+  const todayStr = today();
+  const total = habits.length;
+  const done = habits.filter(h => h.completed.includes(todayStr)).length;
+  const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+
+  document.getElementById("progressPercent").textContent = percent + "%";
+  document.getElementById("progressFill").style.width = percent + "%";
+}
+
 // Render the list
 function render() {
   const habits = loadHabits();
   const list = document.getElementById("habitsList");
+
+  updateProgress(habits);
 
   if (habits.length === 0) {
     list.innerHTML = `<div class="empty">No habits yet. Add one above.</div>`;
@@ -33,10 +76,14 @@ function render() {
   list.innerHTML = habits
     .map((habit) => {
       const isDone = habit.completed.includes(todayStr);
+      const streak = getStreak(habit);
+      const streakClass = streak > 0 ? "active" : "";
+
       return `
         <div class="habit-item ${isDone ? "done" : ""}" data-id="${habit.id}">
           <div class="habit-check" onclick="toggleHabit('${habit.id}')"></div>
           <div class="habit-name">${habit.name}</div>
+          <div class="habit-streak ${streakClass}">${streak > 0 ? streak + "d" : ""}</div>
           <button class="habit-delete" onclick="deleteHabit('${habit.id}')">×</button>
         </div>
       `;
